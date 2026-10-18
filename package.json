@@ -1,0 +1,22 @@
+{
+  "name": "apnicart",
+  "version": "1.0.0",
+  "description": "ApniCart — Mini E-Commerce Platform",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "test": "npm test --prefix backend",
+    "seed": "npm run seed --prefix backend",
+    "build": "npm run build --prefix frontend"
+  },
+  "keywords": [
+    "ecommerce",
+    "react",
+    "express",
+    "mongoose",
+    "apnicart"
+  ],
+  "author": "ApniCart Team",
+  "license": "ISC"
+}
