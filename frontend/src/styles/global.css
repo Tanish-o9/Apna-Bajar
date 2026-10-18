@@ -1,0 +1,431 @@
+/* =========================================================
+   ApniCart Ultra-Modern Design System
+   ========================================================= */
+
+:root {
+  /* Vibrant & Balanced Color Palette */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --primary-subtle: #dbeafe;
+  --primary-dark: #1e40af;
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --accent-light: #fff7ed;
+  --accent-subtle: #ffedd5;
+  --accent-gradient: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-hover: #f8fafc;
+
+  --text-main: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  
+  --border-color: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #3b82f6;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', var(--font-family);
+
+  /* Elevation & Shadows */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+  --shadow-xl: 0 20px 35px -5px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 16px 32px -4px rgba(37, 99, 235, 0.12), 0 6px 14px -2px rgba(15, 23, 42, 0.05);
+  --shadow-glow: 0 0 18px rgba(37, 99, 235, 0.35);
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Layout */
+  --container-max: 1240px;
+  --header-height: 74px;
+
+  /* Transitions */
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-bounce: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-main);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+p {
+  color: var(--text-body);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Page Wrapper */
+.page-wrapper {
+  flex: 1;
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+}
+
+/* Modern Gradient Text */
+.gradient-text-primary {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-accent {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badge-primary {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-subtle);
+}
+
+.badge-accent {
+  background-color: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent-subtle);
+}
+
+.badge-success {
+  background-color: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.badge-warning {
+  background-color: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+.badge-danger {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.badge-discount {
+  background-color: #ef4444;
+  color: #ffffff;
+  font-weight: 800;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.925rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.38);
+  transform: translateY(-2px);
+}
+
+.btn-accent {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.28);
+}
+
+.btn-accent:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.38);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  border: 1.5px solid var(--border-color);
+  background-color: #ffffff;
+  color: var(--text-main);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.825rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 0.95rem 2rem;
+  font-size: 1.05rem;
+  border-radius: var(--radius-md);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  color: var(--text-main);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--primary);
+  animation: slideInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.925rem;
+  font-weight: 500;
+}
+
+.toast-item.toast-success {
+  border-left-color: var(--success);
+}
+
+.toast-item.toast-error {
+  border-left-color: var(--danger);
+}
+
+.toast-item.toast-info {
+  border-left-color: var(--primary);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Shimmer Loading Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty State Card */
+.empty-state {
+  text-align: center;
+  padding: 4.5rem 2.5rem;
+  background-color: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1.5px dashed var(--border-color);
+  max-width: 540px;
+  margin: 3rem auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.empty-state-icon-box {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem auto;
+}
+
+.empty-state-title {
+  font-size: 1.35rem;
+  margin-bottom: 0.6rem;
+}
+
+.empty-state-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.75rem;
+  line-height: 1.55;
+}
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 0.9s linear infinite;
+}
+
+/* Rating Stars */
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #f59e0b;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rating-count {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: normal;
+  margin-left: 0.25rem;
+}
