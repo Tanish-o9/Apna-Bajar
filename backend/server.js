@@ -12,20 +12,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Eagerly initiate database connection in background for serverless cold-start
-if (process.env.MONGODB_URI && process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   connectDB().catch((err) => {
     console.warn(`[Database Warning] Cold-start connection initialization deferred: ${err.message}`);
   });
 }
 
-
-// Middleware
+// CORS Middleware: Supports credentials without invalid wildcard conflicts in browsers
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || '*',
+    origin: true, // Reflects the request origin dynamically, compliant with credentials: true
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-demo-session-id'],
   })
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -55,7 +57,7 @@ app.get('/api/health', async (req, res) => {
 
   let isConnected = mongoose.connection && mongoose.connection.readyState === 1;
 
-  // If not currently connected, attempt a quick connection check
+  // If not currently connected, attempt connection check
   if (!isConnected) {
     try {
       await connectDB();
@@ -94,7 +96,7 @@ app.use(async (req, res, next) => {
     return res.status(503).json({
       success: false,
       message: 'Database service is currently unavailable. Please verify MongoDB service and network access.',
-      error: process.env.NODE_ENV === 'production' ? 'Database connection failure' : error.message,
+      error: error.message,
     });
   }
 });

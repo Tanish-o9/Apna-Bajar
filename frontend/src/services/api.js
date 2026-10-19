@@ -9,11 +9,12 @@ const API_BASE_URL =
 // Create configured Axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 
 /**
  * Format paise to Indian Rupee (INR) currency string

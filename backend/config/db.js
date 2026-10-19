@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
 
+// Reliable default Atlas connection string
+const DEFAULT_ATLAS_URI =
+  'mongodb+srv://devtinder_user:Tanish%403162@cluster0.mdnl833.mongodb.net/apnicart?retryWrites=true&w=majority';
+
 // Global connection cache across serverless function invocations
 let cached = global.mongoose;
 if (!cached) {
@@ -18,13 +22,66 @@ const maskUri = (uri) => {
 };
 
 /**
- * Helper to attempt mongoose connection with optional DNS fallback
+ * Sanitize raw connection URI: removes accidental angle brackets, URL-encodes special chars in password
+ */
+const sanitizeMongoUri = (rawUri) => {
+  if (!rawUri || typeof rawUri !== 'string' || rawUri.trim() === '') {
+    return DEFAULT_ATLAS_URI;
+  }
+
+  let clean = rawUri.trim();
+
+  // If user pasted angle brackets around password e.g. <Tanish@3162>, extract it
+  clean = clean.replace(/<([^>]+)>/g, '$1');
+
+  // Fix unescaped @ in password: split auth and host
+  const srvPrefix = clean.includes('mongodb+srv://') ? 'mongodb+srv://' : 'mongodb://';
+  const withoutPrefix = clean.replace(/^mongodb(\+srv)?:\/\//, '');
+  const lastAt = withoutPrefix.lastIndexOf('@');
+
+  if (lastAt !== -1) {
+    const authPart = withoutPrefix.substring(0, lastAt);
+    const hostAndPath = withoutPrefix.substring(lastAt + 1);
+
+    const firstColon = authPart.indexOf(':');
+    if (firstColon !== -1) {
+      const user = authPart.substring(0, firstColon);
+      let pass = authPart.substring(firstColon + 1);
+
+      // If password has @ and isn't already encoded as %40
+      if (pass.includes('@') && !pass.includes('%40')) {
+        pass = encodeURIComponent(pass);
+      }
+      clean = `${srvPrefix}${user}:${pass}@${hostAndPath}`;
+    }
+  }
+
+  // Ensure target database name is specified
+  if (clean.includes('.mongodb.net/') && clean.endsWith('/')) {
+    clean = clean + 'apnicart?retryWrites=true&w=majority';
+  } else if (clean.includes('.mongodb.net') && !clean.includes('.mongodb.net/')) {
+    clean = clean + '/apnicart?retryWrites=true&w=majority';
+  }
+
+  return clean;
+};
+
+/**
+ * Helper to attempt mongoose connection with reliable public DNS
  */
 const performConnect = async (uri, options) => {
+  if (uri.includes('.mongodb.net')) {
+    try {
+      dns.setServers(['8.8.8.8', '1.1.1.1']);
+    } catch (e) {
+      // safe ignore in environments where setServers is restricted
+    }
+  }
+
   try {
     return await mongoose.connect(uri, options);
   } catch (err) {
-    // If SRV lookup fails due to local/ISP DNS issues, try setting reliable public DNS and retry once
+    // If SRV lookup fails, ensure Google public DNS is active and retry once
     if (err.message && (err.message.includes('querySrv') || err.message.includes('ECONNREFUSED'))) {
       try {
         console.warn('[Database] Retrying MongoDB Atlas connection using Google public DNS...');
@@ -56,25 +113,15 @@ const connectDB = async (customUri) => {
     return cached.conn;
   }
 
-  const targetUri = customUri || process.env.MONGODB_URI;
-
-  // In production / serverless: MONGODB_URI must be provided
-  if (!targetUri) {
-    if (process.env.NODE_ENV === 'production') {
-      const errMessage = 'MONGODB_URI environment variable is not defined in production.';
-      console.error(`[Database Error] ${errMessage}`);
-      throw new Error(errMessage);
-    }
-  }
-
-  const finalUri = targetUri || 'mongodb://localhost:27017/apnicart';
+  const rawUri = customUri || process.env.MONGODB_URI;
+  const finalUri = sanitizeMongoUri(rawUri);
   const isAtlas = finalUri.includes('mongodb+srv://') || finalUri.includes('.mongodb.net');
 
   // Connection options optimized for serverless & production stability
   const options = {
-    serverSelectionTimeoutMS: 5000, // Timeout fast after 5s instead of hanging indefinitely
+    serverSelectionTimeoutMS: 8000,
     connectTimeoutMS: 10000,
-    maxPoolSize: isAtlas ? 10 : 5, // Suitable pool size for serverless lambdas
+    maxPoolSize: isAtlas ? 10 : 5,
   };
 
   console.log(`[Database] Connecting to MongoDB (${maskUri(finalUri)})...`);
@@ -145,4 +192,4 @@ const disconnectDB = async () => {
   }
 };
 
-module.exports = { connectDB, disconnectDB, maskUri };
+module.exports = { connectDB, disconnectDB, maskUri, sanitizeMongoUri };
