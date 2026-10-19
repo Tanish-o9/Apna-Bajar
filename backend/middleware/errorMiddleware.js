@@ -15,10 +15,10 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message || 'Internal Server Error';
   let errors = null;
 
-  // Handle Mongoose Bad ObjectId (CastError)
+  // BUG B3 (Product ID Validation): Inappropriate 500 Internal Server Error returned for CastError
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
-    statusCode = 404;
-    message = `Resource not found with id of ${err.value}`;
+    statusCode = 500;
+    message = `Internal server database error processing id of ${err.value}`;
   }
 
   // Handle Mongoose Validation Errors

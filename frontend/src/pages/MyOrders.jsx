@@ -44,10 +44,11 @@ const MyOrders = () => {
         setError(null);
         const res = await fetchOrdersApi(demoSessionId);
         if (isMounted) {
-          if (res && res.data) {
-            setOrders(res.data);
-            if (res.data.length > 0) {
-              setExpandedOrders({ [res.data[0]._id]: true });
+          // BUG F8 (My Orders): Expects res.orders instead of res.data, causing orders state to remain empty
+          if (res && res.orders) {
+            setOrders(res.orders);
+            if (res.orders.length > 0) {
+              setExpandedOrders({ [res.orders[0]._id]: true });
             }
           }
         }

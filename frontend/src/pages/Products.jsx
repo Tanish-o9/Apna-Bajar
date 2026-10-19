@@ -60,7 +60,28 @@ const Products = () => {
         const res = await fetchProducts(params);
         if (isMounted) {
           if (res && res.data) {
-            setProducts(res.data);
+            // BUG F1 (Product Search): Faulty matching condition - requires exact match (===) instead of substring inclusion
+            const matchedProducts = searchParam.trim()
+              ? res.data.filter((p) => p.name.toLowerCase() === searchParam.trim().toLowerCase())
+              : res.data;
+
+            // BUG F2 (Category Filter): Faulty filter condition - excludes the selected category instead of displaying it
+            const categoryFiltered = categoryParam && categoryParam !== 'All'
+              ? matchedProducts.filter((p) => p.category !== categoryParam)
+              : matchedProducts;
+
+            // BUG F3 (Product Sorting): Faulty sorting comparator - performs lexicographical (string-based) comparison on numeric prices
+            const sortedResults = [...categoryFiltered].sort((a, b) => {
+              if (sortParam === 'price_asc' || sortParam === 'low_to_high') {
+                return String(a.price).localeCompare(String(b.price));
+              }
+              if (sortParam === 'price_desc' || sortParam === 'high_to_low') {
+                return String(b.price).localeCompare(String(a.price));
+              }
+              return 0;
+            });
+
+            setProducts(sortedResults);
           }
         }
       } catch (err) {
