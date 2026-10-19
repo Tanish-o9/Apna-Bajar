@@ -46,8 +46,22 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check endpoint reporting database connectivity safely
-app.get('/api/health', async (req, res) => {
+// Normalize URL if a serverless proxy or rewrite passed an internal file path
+app.use((req, res, next) => {
+  const vercelOriginal =
+    req.headers['x-matched-path'] ||
+    req.headers['x-forwarded-uri'] ||
+    req.headers['x-original-url'] ||
+    req.headers['x-invoke-path'];
+
+  if (vercelOriginal && (req.url === '/server.js' || req.url === '/index.js' || req.originalUrl === '/server.js' || req.originalUrl === '/index.js')) {
+    req.url = vercelOriginal;
+  }
+  next();
+});
+
+// Health check endpoint reporting database connectivity safely (accessible via /api/health or /health)
+const healthHandler = async (req, res) => {
   const readyStates = {
     0: 'disconnected',
     1: 'connected',
@@ -79,12 +93,15 @@ app.get('/api/health', async (req, res) => {
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
   });
-});
+};
+
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 // Middleware: Ensure database is connected before handling any data routes
 app.use(async (req, res, next) => {
   // Skip DB check for root documentation or health endpoints
-  if (req.path === '/' || req.path === '/api/health') {
+  if (req.path === '/' || req.path === '/api/health' || req.path === '/health') {
     return next();
   }
 
@@ -101,10 +118,15 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Mount Routes
+// Mount Routes (supporting both /api/* and root /* paths for maximum serverless compatibility)
 app.use('/api/products', productRoutes);
+app.use('/products', productRoutes);
+
 app.get('/api/categories', getCategories);
+app.get('/categories', getCategories);
+
 app.use('/api/orders', orderRoutes);
+app.use('/orders', orderRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
@@ -124,3 +146,5 @@ if (require.main === module) {
 }
 
 module.exports = app;
+module.exports.default = app;
+
