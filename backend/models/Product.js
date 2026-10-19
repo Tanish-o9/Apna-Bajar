@@ -67,6 +67,7 @@ productSchema.virtual('priceInINR').get(function () {
   return typeof this.price === 'number' ? this.price / 100 : 0;
 });
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 module.exports = Product;
+

@@ -171,6 +171,7 @@ orderSchema.virtual('totalAmountInINR').get(function () {
   return typeof this.totalAmount === 'number' ? this.totalAmount / 100 : 0;
 });
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
 module.exports = Order;
+
