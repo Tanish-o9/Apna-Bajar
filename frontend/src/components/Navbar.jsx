@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, ShoppingCart, Menu, X, Package, Home, Compass, Sparkles } from 'lucide-react';
+import { ShoppingBag, Search, ShoppingCart, Menu, X, Package, Home, Compass, Sparkles, User, LogIn, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { itemCount } = useCart();
+  const { user, logout } = useAuth();
   const [searchInput, setSearchInput] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -83,6 +85,27 @@ const Navbar = () => {
                   <Package size={17} /> My Orders
                 </NavLink>
               </li>
+              {user ? (
+                <li style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <User size={15} style={{ color: 'var(--primary)' }} /> {user.name?.split(' ')[0]}
+                  </span>
+                  <button
+                    onClick={logout}
+                    className="btn btn-sm"
+                    style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: 'var(--bg-muted)', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
+                    title="Logout"
+                  >
+                    <LogOut size={13} />
+                  </button>
+                </li>
+              ) : (
+                <li>
+                  <NavLink to="/login" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                    <LogIn size={17} /> Sign In
+                  </NavLink>
+                </li>
+              )}
               <li>
                 <Link to="/cart" className="cart-btn-link" aria-label="Shopping Cart">
                   <ShoppingCart size={20} />
@@ -133,6 +156,19 @@ const Navbar = () => {
             <Link to="/orders" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
               <Package size={17} /> My Orders
             </Link>
+            {user ? (
+              <button
+                onClick={() => { logout(); setMobileMenuOpen(false); }}
+                className="nav-link"
+                style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--danger)' }}
+              >
+                <LogOut size={17} /> Sign Out ({user.name?.split(' ')[0]})
+              </button>
+            ) : (
+              <Link to="/login" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+                <LogIn size={17} /> Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>

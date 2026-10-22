@@ -73,4 +73,24 @@ export const fetchOrderByIdApi = async (id, demoSessionId) => {
   return response.data;
 };
 
+// Auth Services
+export const loginApi = async (email, password) => {
+  const response = await apiClient.post('/auth/login', { email, password });
+  return response.data;
+};
+
+export const registerApi = async (name, email, password) => {
+  const response = await apiClient.post('/auth/register', { name, email, password });
+  return response.data;
+};
+
+export const getMeApi = async (token) => {
+  const response = await apiClient.get('/auth/me', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
 export default apiClient;

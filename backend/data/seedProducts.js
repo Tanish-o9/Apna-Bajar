@@ -207,6 +207,19 @@ const seedProducts = async () => {
     console.log(`[Seed] Inserting ${sampleProducts.length} realistic sample products...`);
     const inserted = await Product.insertMany(sampleProducts);
 
+    // Seed default demo user for login testing
+    const User = require('../models/User');
+    const existingDemo = await User.findOne({ email: 'demo@apnicart.com' });
+    if (!existingDemo) {
+      await User.create({
+        name: 'Demo Shopper',
+        email: 'demo@apnicart.com',
+        password: 'password123',
+        role: 'customer',
+      });
+      console.log('[Seed] Default demo user created: demo@apnicart.com / password123');
+    }
+
     console.log(`[Seed Success] Successfully seeded ${inserted.length} products into ApniCart!`);
     await mongoose.connection.close();
     process.exit(0);

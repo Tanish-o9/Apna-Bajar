@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const { connectDB } = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const authRoutes = require('./routes/authRoutes');
 const { getCategories } = require('./controllers/productController');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
@@ -127,6 +128,9 @@ app.get('/categories', getCategories);
 
 app.use('/api/orders', orderRoutes);
 app.use('/orders', orderRoutes);
+
+app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
