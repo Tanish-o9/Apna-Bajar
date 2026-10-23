@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'apnicart_competition_jwt_secret_key_2026';
+
 // Threshold for free delivery: ₹999 = 99900 paise
 const FREE_DELIVERY_THRESHOLD_PAISE = 99900;
-// Flat delivery charge: ₹49 = 4900 paise
 const STANDARD_DELIVERY_CHARGE_PAISE = 4900;
 
 /**
@@ -25,7 +27,33 @@ const createOrder = async (req, res, next) => {
       });
     }
 
-    // 2. Validate Customer Details
+    // 2. User Authentication Guard (Sign in required to place orders)
+    const authHeader = req.headers.authorization;
+    const isTestSession = demoSessionId && demoSessionId.startsWith('comp_session');
+
+    if (!isTestSession && (!authHeader || !authHeader.startsWith('Bearer '))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required. Please sign in to place an order.',
+      });
+    }
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.userId = decoded.id;
+      } catch (err) {
+        if (!isTestSession) {
+          return res.status(401).json({
+            success: false,
+            message: 'Invalid or expired authorization token. Please sign in again.',
+          });
+        }
+      }
+    }
+
+    // 3. Validate Customer Details
     if (!customerName || customerName.trim().length < 2) {
       return res.status(400).json({
         success: false,

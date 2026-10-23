@@ -46,11 +46,15 @@ export const fetchCategories = async () => {
   return response.data;
 };
 
-export const createOrderApi = async (orderData, demoSessionId) => {
+export const createOrderApi = async (orderData, demoSessionId, token) => {
+  const headers = {
+    'x-demo-session-id': demoSessionId,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
   const response = await apiClient.post('/orders', orderData, {
-    headers: {
-      'x-demo-session-id': demoSessionId,
-    },
+    headers,
   });
   return response.data;
 };

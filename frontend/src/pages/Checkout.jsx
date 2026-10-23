@@ -13,6 +13,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { createOrderApi, formatPrice } from '../services/api';
 
 const INDIAN_STATES = [
@@ -50,12 +51,21 @@ const INDIAN_STATES = [
 const Checkout = () => {
   const { cart, subtotal, deliveryCharge, totalAmount, demoSessionId, clearCart, showToast } =
     useCart();
+  const { user, token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Form Fields
+  // Redirect to login if unauthenticated
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      showToast('Please sign in to place an order', 'info');
+      navigate('/login', { state: { from: { pathname: '/checkout' } }, replace: true });
+    }
+  }, [isAuthenticated, navigate, showToast]);
+
+  // Form Fields (Pre-filled with logged-in user data)
   const [formData, setFormData] = useState({
-    customerName: '',
-    email: '',
+    customerName: user?.name || '',
+    email: user?.email || '',
     phone: '',
     address: '',
     city: '',
@@ -148,7 +158,7 @@ const Checkout = () => {
         })),
       };
 
-      const res = await createOrderApi(orderPayload, demoSessionId);
+      const res = await createOrderApi(orderPayload, demoSessionId, token);
 
       if (res && res.success) {
         clearCart();
@@ -248,6 +258,27 @@ const Checkout = () => {
             </div>
 
             <form onSubmit={handleSubmit} noValidate>
+              {user && (
+                <div
+                  style={{
+                    backgroundColor: 'var(--bg-subtle)',
+                    border: '1px solid var(--border-color)',
+                    padding: '0.65rem 0.95rem',
+                    borderRadius: 'var(--radius-md)',
+                    marginBottom: '1.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.85rem',
+                    color: 'var(--text-main)',
+                  }}
+                >
+                  <ShieldCheck size={16} style={{ color: 'var(--success)' }} />
+                  <span>
+                    Signed in as <strong>{user.name}</strong> ({user.email})
+                  </span>
+                </div>
+              )}
               <div className="form-grid">
                 {/* Full Name */}
                 <div className="form-group full-width">

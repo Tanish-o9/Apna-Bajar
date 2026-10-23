@@ -12,12 +12,23 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useCart, FREE_DELIVERY_THRESHOLD } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import CartItem from '../components/CartItem';
 import { formatPrice } from '../services/api';
 
 const Cart = () => {
   const { cart, subtotal, deliveryCharge, totalAmount, clearCart, showToast } = useCart();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  const handleProceedToCheckout = () => {
+    if (!isAuthenticated) {
+      showToast('Please sign in to proceed with checkout', 'info');
+      navigate('/login', { state: { from: { pathname: '/checkout' } } });
+      return;
+    }
+    navigate('/checkout');
+  };
 
   // Coupon state
   const [couponCode, setCouponCode] = useState('');
@@ -237,7 +248,7 @@ const Cart = () => {
             <button
               className="btn btn-primary btn-block btn-lg"
               style={{ marginTop: '1.75rem' }}
-              onClick={() => navigate('/checkout')}
+              onClick={handleProceedToCheckout}
               id="proceed-to-checkout-btn"
             >
               Proceed to Checkout <ArrowRight size={18} />
