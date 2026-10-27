@@ -65,9 +65,9 @@ const Products = () => {
               ? res.data.filter((p) => p.name.toLowerCase() === searchParam.trim().toLowerCase())
               : res.data;
 
-            // BUG F2 (Category Filter): Faulty filter condition - excludes the selected category instead of displaying it
+            // Fix BUG F2: Filter products by selected category
             const categoryFiltered = categoryParam && categoryParam !== 'All'
-              ? matchedProducts.filter((p) => p.category !== categoryParam)
+              ? matchedProducts.filter((p) => p.category === categoryParam)
               : matchedProducts;
 
             // BUG F3 (Product Sorting): Faulty sorting comparator - performs lexicographical (string-based) comparison on numeric prices
