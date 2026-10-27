@@ -113,8 +113,7 @@ const Checkout = () => {
     }
 
     setErrors(errs);
-    // BUG F7 (Checkout Validation): Return condition uses >= 0 instead of === 0, always evaluating to true and accepting invalid form data
-    return Object.keys(errs).length >= 0;
+    return Object.keys(errs).length === 0;
   };
 
   const handleChange = (e) => {

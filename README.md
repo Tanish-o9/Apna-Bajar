@@ -240,20 +240,4 @@ npm test
 
 All 10 tests run cleanly and pass with a 100% pass rate.
 
----
 
-## 🏆 Bug-Hunting Competition Guide (Future Phase)
-
-This codebase represents the **clean baseline**. When ready to run a bug-hunting competition:
-
-1. Create a separate branch (e.g. `competition-branch`).
-2. Candidate bug injection locations:
-   - **Bug 1 (Search/Filter)**: Invert sorting logic or case-sensitivity mismatch in regex query.
-   - **Bug 2 (Cart Total)**: Off-by-one in free delivery threshold check or floating point division before summing.
-   - **Bug 3 (Stock Validation)**: Allow adding more items to cart than stock or decrement stock without checking availability.
-   - **Bug 4 (Checkout Validation)**: Accept invalid 5-digit PIN codes or phone numbers without Indian prefix check.
-   - **Bug 5 (Price Tampering)**: Use client-sent `unitPrice` instead of fetching from MongoDB during order creation.
-   - **Bug 6 (Session ID)**: Fail to verify `demoSessionId` on `GET /api/orders/:id`, exposing other customers' orders (IDOR vulnerability).
-   - **Bug 7 (Cart Persistence)**: Cart does not persist on page refresh or fails to sync with updated inventory.
-
-Students can be provided with bug symptom descriptions and tasked with fixing the issues on their challenge branch.

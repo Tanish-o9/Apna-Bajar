@@ -15,7 +15,6 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message || 'Internal Server Error';
   let errors = null;
 
-  // BUG B3 (Product ID Validation): Inappropriate 500 Internal Server Error returned for CastError
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
     statusCode = 500;
     message = `Internal server database error processing id of ${err.value}`;

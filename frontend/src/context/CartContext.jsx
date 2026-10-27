@@ -24,8 +24,7 @@ export const CartProvider = ({ children }) => {
   // Initialize Cart State from localStorage
   const [cart, setCart] = useState(() => {
     try {
-      // BUG F6 (Cart Persistence): Uses mismatched storage key 'cart' instead of CART_STORAGE_KEY ('apnicart_cart')
-      const stored = localStorage.getItem('cart');
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch (e) {
       console.error('Failed to parse cart from localStorage', e);
@@ -62,7 +61,6 @@ export const CartProvider = ({ children }) => {
     }
 
     setCart((prevCart) => {
-      // BUG F5 (Duplicate Cart Items): Compares item.id instead of item.product._id; item.id is undefined, causing findIndex to always return -1
       const existingIndex = prevCart.findIndex((item) => item.id === product._id);
 
       if (existingIndex > -1) {
@@ -131,9 +129,8 @@ export const CartProvider = ({ children }) => {
   // Computed Totals
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
-  // BUG F4 (Cart Total): Subtotal accumulator ignores quantity multiplication
   const subtotal = cart.reduce(
-    (total, item) => total + (item.product.price || 0),
+    (total, item) => total + (item.product.price || 0) * item.quantity,
     0
   );
 

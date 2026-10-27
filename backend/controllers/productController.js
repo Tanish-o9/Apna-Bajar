@@ -13,8 +13,7 @@ const getProducts = async (req, res, next) => {
 
     // Filter by Category
     if (category && category !== 'All') {
-      // BUG B1 (Products API): Inverts category filter with $ne, returning all categories EXCEPT the requested one
-      filter.category = { $ne: category.trim() };
+      filter.category = category.trim();
     }
 
     // Filter by Search Keyword (in name or description)
@@ -60,10 +59,6 @@ const getProducts = async (req, res, next) => {
 const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    // BUG B3 (Product ID Validation): Omitted mongoose.Types.ObjectId.isValid check; invalid format triggers unhandled CastError returning 500
-    // if (!mongoose.Types.ObjectId.isValid(id)) { ... }
-
     const product = await Product.findById(id);
 
     if (!product) {
@@ -89,9 +84,7 @@ const getProductById = async (req, res, next) => {
  */
 const getCategories = async (req, res, next) => {
   try {
-    // BUG B2 (Categories API): Maps non-distinct categories across all product records, returning duplicate entries
-    const products = await Product.find({}, 'category');
-    const categories = products.map((p) => p.category);
+    const categories = await Product.distinct('category');
     res.status(200).json({
       success: true,
       count: categories.length,

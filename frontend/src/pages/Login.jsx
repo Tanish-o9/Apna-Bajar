@@ -71,7 +71,6 @@ const Login = () => {
         }
       } else {
         const res = await loginApi(formData.email, formData.password);
-        // Handled with awareness of Backend Bug B11 (where invalid credentials returns 200 with success: false)
         if (res && res.success && res.token) {
           login(res.user, res.token);
           showToast(`Welcome back, ${res.user.name}!`, 'success');
@@ -290,11 +289,9 @@ const Login = () => {
               Password
             </label>
             <div style={{ position: 'relative' }}>
-              {/* BUG F10 (Password Visibility Inverted): Condition is inverted (showPassword ? 'password' : 'text')
-                  Causes the password to be visible by default and masked when eye is clicked */}
               <input
                 id="auth-password"
-                type={showPassword ? 'password' : 'text'}
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}

@@ -72,12 +72,8 @@ const loginUser = async (req, res, next) => {
       });
     }
 
-    // BUG B9 (Login Email Case-Sensitivity): Omitted email.toLowerCase().trim() normalization
-    // Querying exact case causes login to fail if user enters 'Demo@apnicart.com' or has trailing space
     const user = await User.findOne({ email });
 
-    // BUG B11 (Inappropriate Status Code): Returns HTTP 200 OK with success: false instead of HTTP 401 Unauthorized
-    // This fools HTTP clients that rely on HTTP error status codes to trigger catch blocks
     if (!user || !(await user.matchPassword(password))) {
       return res.status(200).json({
         success: false,
@@ -87,7 +83,6 @@ const loginUser = async (req, res, next) => {
 
     const token = generateToken(user._id);
 
-    // BUG B10 (Credential Leak): Exposes user password hash in client response payload
     res.status(200).json({
       success: true,
       token,
@@ -95,7 +90,7 @@ const loginUser = async (req, res, next) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        password: user.password, // ⚠️ Insecure: Leaks hashed password to frontend
+        password: user.password,
         role: user.role,
       },
     });

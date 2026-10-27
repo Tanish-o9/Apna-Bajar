@@ -124,8 +124,7 @@ const createOrder = async (req, res, next) => {
       }
 
       const numQuantity = parseInt(quantity, 10);
-      // BUG B4 (Quantity Validation): Accepts quantity of 0 because condition checks (< 0) instead of (<= 0)
-      if (isNaN(numQuantity) || numQuantity < 0) {
+      if (isNaN(numQuantity) || numQuantity <= 0) {
         return res.status(400).json({
           success: false,
           message: 'Item quantity must be a positive integer greater than zero',
@@ -141,7 +140,6 @@ const createOrder = async (req, res, next) => {
         });
       }
 
-      // BUG B6 (Stock Validation): Faulty check only checks if stock is <= 0 instead of verifying stock is sufficient for requested quantity
       if (product.stock <= 0) {
         return res.status(400).json({
           success: false,
@@ -149,7 +147,6 @@ const createOrder = async (req, res, next) => {
         });
       }
 
-      // BUG B5 (Order Total Calculation): Trusts client-supplied price in item payload instead of server DB price
       const unitPricePaise = item.price !== undefined ? parseInt(item.price, 10) : product.price;
       const lineTotalPaise = unitPricePaise * numQuantity;
       subtotalPaise += lineTotalPaise;
@@ -162,10 +159,8 @@ const createOrder = async (req, res, next) => {
         lineTotal: lineTotalPaise,
       });
 
-      // BUG B8 (Concurrent Stock Updates): Non-atomic read-modify-write stock deduction with async gap enables overselling
       await new Promise((resolve) => setTimeout(resolve, 50));
       product.stock -= numQuantity;
-      // BUG B6: Bypasses schema validation on save, allowing negative inventory to be persisted
       await product.save({ validateBeforeSave: false });
     }
 
@@ -174,7 +169,6 @@ const createOrder = async (req, res, next) => {
       subtotalPaise >= FREE_DELIVERY_THRESHOLD_PAISE ? 0 : STANDARD_DELIVERY_CHARGE_PAISE;
     const totalAmountPaise = subtotalPaise + deliveryChargePaise;
 
-    // BUG B7 (Order Persistence): Constructs un-persisted Order instance without calling .save() or Order.create()
     const order = new Order({
       demoSessionId: demoSessionId.trim(),
       customerName: customerName.trim(),
@@ -192,7 +186,6 @@ const createOrder = async (req, res, next) => {
       totalAmount: totalAmountPaise,
       orderStatus: 'Confirmed',
     });
-    // Intentionally omitted: await order.save();
 
     res.status(201).json({
       success: true,

@@ -6,7 +6,6 @@ const AuthContext = createContext();
 export const AUTH_STORAGE_KEY = 'apnicart_token';
 
 export const AuthProvider = ({ children }) => {
-  // BUG F9 (Auth Persistence Key Mismatch): Reads from AUTH_STORAGE_KEY ('apnicart_token') on page refresh
   const [token, setToken] = useState(() => {
     try {
       return localStorage.getItem(AUTH_STORAGE_KEY) || null;
@@ -17,8 +16,6 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(() => {
     try {
-      // Session requires valid AUTH_STORAGE_KEY ('apnicart_token')
-      // Since login saves under 'user_token', this check fails on refresh and wipes user
       const storedToken = localStorage.getItem(AUTH_STORAGE_KEY);
       if (!storedToken) return null;
       const stored = localStorage.getItem('apnicart_user');
@@ -52,8 +49,6 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     setToken(authToken);
     try {
-      // BUG F9 (Auth Token Key Mismatch): Stores token under 'user_token' instead of AUTH_STORAGE_KEY ('apnicart_token')
-      // Causes auth session to be wiped out whenever page is reloaded
       localStorage.setItem('user_token', authToken);
       localStorage.setItem('apnicart_user', JSON.stringify(userData));
     } catch (e) {
